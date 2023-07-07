@@ -1,16 +1,12 @@
 package org.example.pages;
 
-import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.*;
 import io.qameta.allure.Step;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.FindBy;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 
 public class SettingsPage {
 
@@ -36,11 +32,14 @@ public class SettingsPage {
     @Step("Select timezone")
     public SettingsPage selectNewTimezone(String timezone) {
         timezoneDropdown.shouldBe(visible).click();
-        listTimezonesInDropdown
-                .shouldHave(CollectionCondition.sizeGreaterThan(0).because( "List of timezones not found"))
-                .find(text(timezone))
-                .shouldBe(visible.because("Timezone not found: " + timezone))
-                .click();
+        SelenideElement selenideElement = listTimezonesInDropdown
+                .shouldHave(CollectionCondition.sizeGreaterThan(0).because("List of timezones not found"))
+                .find(text(timezone));
+
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) WebDriverRunner.getWebDriver();
+        jsExecutor.executeScript("arguments[0].scrollIntoView(true);", selenideElement);
+
+        selenideElement.click();
         return this;
     }
 }
